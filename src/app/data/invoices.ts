@@ -1,0 +1,83 @@
+import { Invoice } from '../models/invoice';
+
+// Datos de ejemplo con ~1 mes de antigüedad.
+export const INVOICES: Invoice[] = [
+  {
+    id: '1',
+    number: 'FAC-2026-0142',
+    clientName: 'Conjunto Residencial Los Almendros',
+    clientAddress: 'Av. Caracas #74-89, Bogotá',
+    clientEmail: 'administracion@losalmendros.com',
+    issueDate: '2026-05-26',
+    dueDate: '2026-06-09',
+    status: 'paid',
+    items: [
+      { description: 'Poda de setos y arbustos', quantity: 8, unitPrice: 35000 },
+      { description: 'Mantenimiento de jardín común (mensual)', quantity: 1, unitPrice: 420000 },
+      { description: 'Fertilización orgánica de césped', quantity: 1, unitPrice: 95000 },
+    ],
+    notes: 'Servicio ejecutado los días 20 y 21 de mayo.',
+  },
+  {
+    id: '2',
+    number: 'FAC-2026-0143',
+    clientName: 'Restaurante El Patio Verde',
+    clientAddress: 'Calle 90 #11-35, Bogotá',
+    clientEmail: 'gerencia@elpatioverde.co',
+    issueDate: '2026-05-27',
+    dueDate: '2026-06-10',
+    status: 'pending',
+    items: [
+      { description: 'Instalación de macetas decorativas', quantity: 6, unitPrice: 78000 },
+      { description: 'Riego automático (instalación)', quantity: 1, unitPrice: 650000 },
+      { description: 'Plantas ornamentales (varias)', quantity: 12, unitPrice: 32000 },
+    ],
+    notes: 'Garantía de 3 meses sobre el sistema de riego.',
+  },
+  {
+    id: '3',
+    number: 'FAC-2026-0144',
+    clientName: 'Hotel Boutique La Floresta',
+    clientAddress: 'Cra. 7 #70-22, Bogotá',
+    clientEmail: 'contabilidad@lafloresta.co',
+    issueDate: '2026-05-28',
+    dueDate: '2026-06-11',
+    status: 'overdue',
+    items: [
+      { description: 'Diseño y remodelación de jardín frontal', quantity: 1, unitPrice: 1850000 },
+      { description: 'Mantenimiento de palmas y bambú', quantity: 4, unitPrice: 58000 },
+      { description: 'Control de plagas (aplicación)', quantity: 1, unitPrice: 120000 },
+    ],
+    notes: 'Pronto: segunda fase de remodelación en patio interior.',
+  },
+  {
+    id: '4',
+    number: 'FAC-2026-0145',
+    clientName: 'Oficinas Torre Central Piso 12',
+    clientAddress: 'Calle 100 #15-20, Bogotá',
+    clientEmail: 'facilities@torrecentral.com',
+    issueDate: '2026-05-29',
+    dueDate: '2026-06-12',
+    status: 'paid',
+    items: [
+      { description: 'Mantenimiento de plantas interiores (mensual)', quantity: 1, unitPrice: 280000 },
+      { description: 'Reposición de plantas (Spathiphyllum)', quantity: 5, unitPrice: 24000 },
+    ],
+  },
+  {
+    id: '5',
+    number: 'FAC-2026-0146',
+    clientName: 'Centro Comercial Plaza Verde',
+    clientAddress: 'Av. Suba #120-30, Bogotá',
+    clientEmail: 'servicios@plazaverde.co',
+    issueDate: '2026-05-30',
+    dueDate: '2026-06-13',
+    status: 'pending',
+    items: [
+      { description: 'Poda de árboles del parqueadero', quantity: 10, unitPrice: 88000 },
+      { description: 'Limpieza y desmalezado de andenes', quantity: 1, unitPrice: 210000 },
+      { description: 'Fertilización de áreas verdes', quantity: 1, unitPrice: 175000 },
+    ],
+    notes: 'Coordinar acceso con administración del CC.',
+  },
+];
