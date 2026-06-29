@@ -1,0 +1,140 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Nueva factura</h1>
+      <p class="muted">Completa los datos del cliente y los servicios prestados</p>
+    </div>
+    <a routerLink="/facturas" class="btn btn-ghost">← Volver</a>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="form-card">
+    <fieldset class="section">
+      <legend>Datos de la factura</legend>
+      <div class="grid-2">
+        <div class="field">
+          <label for="number">Número *</label>
+          <input id="number" type="text" formControlName="number" placeholder="FAC-2026-0147" />
+          <small class="hint">Formato: FAC-AAAA-NNNN</small>
+          <p class="error" *ngIf="invalid(form.controls.number)">
+            <span *ngIf="form.controls.number.errors?.['required']">El número es obligatorio.</span>
+            <span *ngIf="form.controls.number.errors?.['pattern']">Formato inválido (FAC-AAAA-NNNN).</span>
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="status">Estado *</label>
+          <select id="status" formControlName="status">
+            <option *ngFor="let s of statuses" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="issueDate">Fecha emisión *</label>
+          <input id="issueDate" type="date" formControlName="issueDate" />
+          <p class="error" *ngIf="invalid(form.controls.issueDate)">
+            <span *ngIf="form.controls.issueDate.errors?.['required']">Obligatorio.</span>
+            <span *ngIf="form.controls.issueDate.errors?.['isoDate']">Fecha inválida.</span>
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="dueDate">Fecha vencimiento *</label>
+          <input id="dueDate" type="date" formControlName="dueDate" />
+          <p class="error" *ngIf="invalid(form.controls.dueDate)">
+            <span *ngIf="form.controls.dueDate.errors?.['required']">Obligatorio.</span>
+            <span *ngIf="form.controls.dueDate.errors?.['isoDate']">Fecha inválida.</span>
+          </p>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="section">
+      <legend>Datos del cliente</legend>
+      <div class="grid-2">
+        <div class="field">
+          <label for="clientName">Nombre / Razón social *</label>
+          <input id="clientName" type="text" formControlName="clientName" />
+          <p class="error" *ngIf="invalid(form.controls.clientName)">
+            <span *ngIf="form.controls.clientName.errors?.['required']">Obligatorio.</span>
+            <span *ngIf="form.controls.clientName.errors?.['minlength']">Mínimo 3 caracteres.</span>
+          </p>
+        </div>
+
+        <div class="field">
+          <label for="clientEmail">Correo *</label>
+          <input id="clientEmail" type="email" formControlName="clientEmail" placeholder="cliente@correo.com" />
+          <p class="error" *ngIf="invalid(form.controls.clientEmail)">
+            <span *ngIf="form.controls.clientEmail.errors?.['required']">Obligatorio.</span>
+            <span *ngIf="form.controls.clientEmail.errors?.['email']">Correo inválido.</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="clientAddress">Dirección *</label>
+        <input id="clientAddress" type="text" formControlName="clientAddress" />
+        <p class="error" *ngIf="invalid(form.controls.clientAddress)">
+          <span *ngIf="form.controls.clientAddress.errors?.['required']">Obligatorio.</span>
+          <span *ngIf="form.controls.clientAddress.errors?.['minlength']">Mínimo 5 caracteres.</span>
+        </p>
+      </div>
+    </fieldset>
+
+    <fieldset class="section">
+      <div class="section-head">
+        <legend>Items</legend>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="addItem()">+ Agregar item</button>
+      </div>
+
+      <div formArrayName="items" class="items-wrap">
+        <div *ngFor="let row of itemsArray; let i = index" class="item-row" [formGroupName]="i">
+          <div class="field field-desc">
+            <label>Descripción *</label>
+            <input type="text" formControlName="description" placeholder="Servicio de jardinería" />
+            <p class="error" *ngIf="invalid(row.controls.description)">
+              <span *ngIf="row.controls.description.errors?.['required']">Obligatorio.</span>
+              <span *ngIf="row.controls.description.errors?.['minlength']">Mínimo 3 caracteres.</span>
+            </p>
+          </div>
+          <div class="field field-qty">
+            <label>Cant. *</label>
+            <input type="number" formControlName="quantity" min="1" />
+            <p class="error" *ngIf="invalid(row.controls.quantity)">
+              <span *ngIf="row.controls.quantity.errors?.['min']">Mínimo 1.</span>
+            </p>
+          </div>
+          <div class="field field-price">
+            <label>Precio unit. *</label>
+            <input type="number" formControlName="unitPrice" min="1" />
+            <p class="error" *ngIf="invalid(row.controls.unitPrice)">
+              <span *ngIf="row.controls.unitPrice.errors?.['min']">Debe ser mayor a 0.</span>
+            </p>
+          </div>
+          <div class="field field-sub">
+            <label>Subtotal</label>
+            <span class="calc">{{ money(row.controls.quantity.value * row.controls.unitPrice.value) }}</span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-icon" (click)="removeItem(i)" [disabled]="items.length <= 1" title="Eliminar">✕</button>
+        </div>
+      </div>
+
+      <div class="form-totals">
+        <div><span>Subtotal</span><span>{{ money(subtotal()) }}</span></div>
+        <div><span>IVA (19%)</span><span>{{ money(tax()) }}</span></div>
+        <div class="grand"><span>Total</span><span>{{ money(total()) }}</span></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="section">
+      <legend>Notas (opcional)</legend>
+      <div class="field">
+        <textarea formControlName="notes" rows="2" placeholder="Observaciones del servicio..."></textarea>
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <a routerLink="/facturas" class="btn btn-ghost">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid && submitted">Guardar factura</button>
+    </div>
+  </form>
+</div>

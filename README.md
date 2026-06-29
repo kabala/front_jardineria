@@ -40,8 +40,9 @@ npm run build
 - Filtra por estado (pagada, pendiente, vencida).
 - Abre una vista de detalle de cada factura.
 - Descarga cada factura como PDF con encabezado de la empresa, datos del cliente, tabla de ítems, subtotal, IVA (19%) y total.
+- Permite crear nuevas facturas desde un formulario reactivo con validaciones (datos del cliente, fechas y items dinámicos).
 
-Los datos son de ejemplo y corresponden a un periodo de hace un mes.
+Los datos son de ejemplo y corresponden a un periodo de hace un mes. Las facturas nuevas se agregan a la lista y se reflejan de inmediato en la tabla y los totales.
 
 ## Estructura principal
 
@@ -50,7 +51,8 @@ src/app/
   models/      interfaces de factura y constantes de empresa
   data/        facturas de ejemplo
   services/    lógica de facturas y generación de PDF
-  app.*        componente principal (dashboard)
+  pages/       páginas: dashboard (listado) y formulario de nueva factura
+  app.*        componente raíz (barra de navegación + router)
 ```
 
-El PDF se genera con [jsPDF](https://github.com/parallax/jsPDF) y [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable).
+El PDF se genera con [jsPDF](https://github.com/parallax/jsPDF) y [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable). El formulario usa Reactive Forms de Angular con `FormArray` para los items.

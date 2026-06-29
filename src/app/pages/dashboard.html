@@ -1,0 +1,135 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Facturas</h1>
+      <p class="muted">Visualización y descarga de facturas de jardinería</p>
+    </div>
+    <a routerLink="/facturas/nueva" class="btn btn-primary">+ Nueva factura</a>
+  </header>
+
+  <section class="stats">
+    <div class="stat-card">
+      <span class="stat-label">Facturas</span>
+      <span class="stat-value">{{ summary().count }}</span>
+    </div>
+    <div class="stat-card stat-total">
+      <span class="stat-label">Ingresos brutos</span>
+      <span class="stat-value">{{ money(summary().totalRevenue) }}</span>
+    </div>
+    <div class="stat-card stat-paid">
+      <span class="stat-label">Cobrado</span>
+      <span class="stat-value">{{ money(summary().paid) }}</span>
+    </div>
+    <div class="stat-card stat-pending">
+      <span class="stat-label">Pendiente</span>
+      <span class="stat-value">{{ money(summary().pending) }}</span>
+    </div>
+    <div class="stat-card stat-overdue">
+      <span class="stat-label">Vencido</span>
+      <span class="stat-value">{{ money(summary().overdue) }}</span>
+    </div>
+  </section>
+
+  <section class="filters">
+    <button type="button" [class.active]="filter() === 'all'" (click)="setFilter('all')">Todas</button>
+    <button type="button" [class.active]="filter() === 'paid'" (click)="setFilter('paid')">Pagadas</button>
+    <button type="button" [class.active]="filter() === 'pending'" (click)="setFilter('pending')">Pendientes</button>
+    <button type="button" [class.active]="filter() === 'overdue'" (click)="setFilter('overdue')">Vencidas</button>
+  </section>
+
+  <section class="table-wrap">
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Emisión</th>
+          <th>Vence</th>
+          <th>Estado</th>
+          <th class="num">Total</th>
+          <th class="col-actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inv of filtered(); trackBy: trackById">
+          <td class="mono">{{ inv.number }}</td>
+          <td>{{ inv.clientName }}</td>
+          <td>{{ formatDate(inv.issueDate) }}</td>
+          <td>{{ formatDate(inv.dueDate) }}</td>
+          <td><span [class]="statusClass(inv.status)">{{ statusLabel(inv.status) }}</span></td>
+          <td class="num">{{ money(totals(inv).total) }}</td>
+          <td class="col-actions">
+            <button type="button" class="btn btn-ghost" (click)="select(inv)">Ver</button>
+            <button type="button" class="btn btn-primary" (click)="download(inv)">PDF</button>
+          </td>
+        </tr>
+        <tr *ngIf="filtered().length === 0">
+          <td colspan="7" class="empty">No hay facturas con este filtro.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="selected()" (click)="close()"></div>
+<article class="modal" *ngIf="selected() as inv" role="dialog" aria-modal="true">
+  <header class="modal-header">
+    <div>
+      <h2>{{ inv.number }}</h2>
+      <p class="muted">{{ inv.clientName }}</p>
+    </div>
+    <button type="button" class="btn btn-ghost" (click)="close()">Cerrar ✕</button>
+  </header>
+
+  <div class="modal-body">
+    <div class="detail-grid">
+      <div>
+        <p class="field-label">Cliente</p>
+        <p>{{ inv.clientName }}</p>
+        <p class="muted">{{ inv.clientAddress }}</p>
+        <p class="muted">{{ inv.clientEmail }}</p>
+      </div>
+      <div>
+        <p class="field-label">Emisión</p>
+        <p>{{ formatDate(inv.issueDate) }}</p>
+        <p class="field-label">Vencimiento</p>
+        <p>{{ formatDate(inv.dueDate) }}</p>
+      </div>
+      <div>
+        <p class="field-label">Estado</p>
+        <p><span [class]="statusClass(inv.status)">{{ statusLabel(inv.status) }}</span></p>
+      </div>
+    </div>
+
+    <table class="detail-table">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th class="num">Cant.</th>
+          <th class="num">Precio unit.</th>
+          <th class="num">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of inv.items">
+          <td>{{ item.description }}</td>
+          <td class="num">{{ item.quantity }}</td>
+          <td class="num">{{ money(item.unitPrice) }}</td>
+          <td class="num">{{ money(item.quantity * item.unitPrice) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div><span>Subtotal</span><span>{{ money(totals(inv).subtotal) }}</span></div>
+      <div><span>IVA (19%)</span><span>{{ money(totals(inv).tax) }}</span></div>
+      <div class="grand"><span>Total</span><span>{{ money(totals(inv).total) }}</span></div>
+    </div>
+
+    <p class="notes" *ngIf="inv.notes">Notas: {{ inv.notes }}</p>
+  </div>
+
+  <footer class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="download(inv)">Descargar PDF</button>
+  </footer>
+</article>
